@@ -112,4 +112,25 @@ export class PhotoService {
       }
     }
   }
+
+  public async deletePhoto(photo: UserPhoto, position: number) {
+    // Remove this photo from the Photos reference data array
+    this.photos.splice(position, 1);
+
+    // Update photos array cache by overwriting the existing photo array
+    Preferences.set({
+      key: this.PHOTO_STORAGE,
+      value: JSON.stringify(this.photos),
+    });
+
+    // delete photo from file system.
+    const fileName = photo.filepath.substring(
+      photo.filepath.lastIndexOf('/') + 1
+    );
+
+    await Filesystem.deleteFile({
+      path: fileName,
+      directory: Directory.Data,
+    });
+  }
 }
